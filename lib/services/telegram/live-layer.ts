@@ -1,9 +1,8 @@
 import { Effect, Config, Redacted, Layer } from 'effect'
 import { FetchHttpClient, HttpClient, HttpClientRequest } from '@effect/platform'
 import { TelegramConfig, Telegram } from './service'
-import { TelegramConfigError, TelegramNetworkError, TelegramAPIError } from './errors'
+import { TelegramConfigError, TelegramNetworkError } from './errors'
 
-// Live implementation: Layer to create TelegramConfig from environment
 export const TelegramConfigLive = Layer.effect(
   TelegramConfig,
   Effect.gen(function* () {
@@ -18,8 +17,7 @@ export const TelegramConfigLive = Layer.effect(
   })
 )
 
-// Live implementation: Telegram service that connects to real Telegram API
-export const TelegramServiceLive = Layer.effect(
+const TelegramServiceLive = Layer.effect(
   Telegram,
   Effect.gen(function* () {
     const config = yield* TelegramConfig
@@ -63,45 +61,16 @@ export const TelegramServiceLive = Layer.effect(
           })
         )
 
-        const telegramResponse = yield* response.json.pipe(
-          Effect.catchAll(error =>
-            Effect.fail(
-              new TelegramAPIError({
-                message: 'Failed to parse Telegram API response'
-              })
-            )
-          )
-        )
-
-        // Check if Telegram API returned an error
-        if (
-          telegramResponse &&
-          typeof telegramResponse === 'object' &&
-          'ok' in telegramResponse &&
-          !telegramResponse.ok
-        ) {
-          const apiResponse = telegramResponse as {
-            ok: boolean
-            error_code?: number
-            description?: string
-          }
-          yield* new TelegramAPIError({
-            message: 'Telegram API returned error',
-            errorCode: apiResponse.error_code || 0,
-            description: apiResponse.description || 'Unknown error'
-          })
-        }
-
-        return telegramResponse
+        // If we get here, it was a 2xx response - success!
+        // We don't need to parse or validate the JSON response
+        return response
       })
 
     return { sendMessage }
   })
 )
 
-// Complete live layer with all dependencies
 export const TelegramLive = TelegramServiceLive.pipe(
   Layer.provide(TelegramConfigLive),
   Layer.provide(FetchHttpClient.layer)
 )
-

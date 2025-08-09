@@ -1,6 +1,6 @@
 import { Effect, Context, Redacted } from 'effect'
-import { HttpBody } from '@effect/platform'
-import { TelegramNetworkError, TelegramAPIError } from './errors'
+import { HttpClientResponse, HttpBody } from '@effect/platform'
+import { TelegramNetworkError } from './errors'
 
 export class TelegramConfig extends Context.Tag('TelegramConfig')<
   TelegramConfig,
@@ -16,8 +16,8 @@ export class Telegram extends Context.Tag('Telegram')<
     readonly sendMessage: (
       text: string
     ) => Effect.Effect<
-      unknown,
-      TelegramNetworkError | TelegramAPIError | HttpBody.HttpBodyError,
+      HttpClientResponse.HttpClientResponse,
+      TelegramNetworkError | HttpBody.HttpBodyError,
       never
     >
   }
