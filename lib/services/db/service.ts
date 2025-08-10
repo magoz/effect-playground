@@ -4,7 +4,8 @@ import { Config, Effect } from 'effect'
 import * as schema from './schema'
 
 const PgLive = PgClient.layerConfig({
-  url: Config.redacted('DATABASE_URL')
+  url: Config.redacted('DATABASE_URL'),
+  ssl: Config.succeed(true)
 })
 
 export class DrizzleClient extends Effect.Service<DrizzleClient>()('@app/DrizzleClient', {
