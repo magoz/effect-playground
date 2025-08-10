@@ -1,11 +1,5 @@
-import { defineConfig } from 'drizzle-kit'
-import { integer, pgTable } from 'drizzle-orm/pg-core'
-
-export default defineConfig({
-  dialect: 'postgresql',
-  schema: './src/db/schema.ts'
-})
+import { integer, pgTable, serial } from 'drizzle-orm/pg-core'
 
 export const users = pgTable('users', {
-  id: integer()
+  id: serial('id').primaryKey()
 })
