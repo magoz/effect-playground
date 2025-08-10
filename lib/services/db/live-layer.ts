@@ -10,10 +10,7 @@ const PgLive = PgClient.layerConfig({
 
 export class DbLive extends Effect.Service<DbLive>()('@app/DbLive', {
   dependencies: [PgLive],
-  effect: Effect.gen(function* () {
-    const db = yield* PgDrizzle.make<typeof schema>({
-      schema: schema
-    })
-    return db
+  effect: PgDrizzle.make<typeof schema>({
+    schema: schema
   })
 }) {}
