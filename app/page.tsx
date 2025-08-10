@@ -8,10 +8,10 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-[calc(100vh-80px)] bg-gray-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Learning Effect</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Authentication</h1>
           <p className="text-gray-600 mt-2">Sign in to your account or create a new one</p>
         </div>
 

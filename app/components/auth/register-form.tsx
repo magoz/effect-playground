@@ -18,13 +18,18 @@ export function RegisterForm() {
     setError(null)
 
     try {
-      await authClient.signUp.email({
+      const result = await authClient.signUp.email({
         email: formData.email,
         password: formData.password,
         name: formData.name,
       })
-      // Redirect or show success message
-      console.log('Registration successful!')
+      
+      if (result.error) {
+        setError(result.error.message || 'Registration failed')
+      } else {
+        console.log('Registration successful!')
+        // Redirect or show success message
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed')
     } finally {

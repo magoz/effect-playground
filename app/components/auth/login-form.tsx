@@ -17,13 +17,17 @@ export function LoginForm() {
     setError(null)
 
     try {
-      await authClient.signIn.email({
+      const result = await authClient.signIn.email({
         email: formData.email,
         password: formData.password,
       })
-      // Redirect or show success message
-      console.log('Login successful!')
-      window.location.reload()
+      
+      if (result.error) {
+        setError(result.error.message || 'Login failed')
+      } else {
+        console.log('Login successful!')
+        window.location.reload()
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
     } finally {
