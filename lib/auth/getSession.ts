@@ -8,7 +8,7 @@ export async function getSession() {
       Effect.gen(function* () {
         const authService = yield* BetterAuth
         return yield* authService.getSessionFromCookies()
-      }).pipe(Effect.provide(AppLayer))
+      }).pipe(Effect.provide(AppLayer), Effect.scoped)
     )
     
     return result

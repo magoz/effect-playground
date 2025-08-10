@@ -1,12 +1,13 @@
 'use client'
 
 import { authClient } from '@/lib/auth-client'
-import { useSession } from '@/lib/auth/useSession'
 import Link from 'next/link'
 import { useState } from 'react'
 
 export function TopNav() {
-  const { data: session, isPending } = useSession()
+  const { data: session, isPending } = authClient.useSession()
+  console.log('Session', session)
+
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const handleLogout = async () => {

@@ -2,17 +2,22 @@ import * as Effect from 'effect/Effect'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { nextCookies } from 'better-auth/next-js'
-import { DbLive } from '../db/live-layer'
 import { BetterAuthApiError } from './errors'
 import * as schema from '../db/schema'
+import { Context } from 'effect'
+
+// Create a separate Drizzle database tag for better-auth
+export class AuthDb extends Context.Tag('@app/AuthDb')<AuthDb, any>() {}
 
 export class BetterAuth extends Effect.Service<BetterAuth>()('@app/BetterAuth', {
   accessors: true,
   effect: Effect.gen(function* () {
-    const db = yield* DbLive
+    // Get the separate Drizzle database instance for auth
+    const authDb = yield* AuthDb
 
     const auth = betterAuth({
-      database: drizzleAdapter(db, {
+      baseURL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+      database: drizzleAdapter(authDb, {
         provider: 'pg',
         schema
       }),
@@ -65,13 +70,13 @@ export class BetterAuth extends Effect.Service<BetterAuth>()('@app/BetterAuth', 
         // Import cookies dynamically to avoid issues in client-side code
         const { cookies } = yield* Effect.tryPromise(() => import('next/headers'))
         const cookieStore = yield* Effect.tryPromise(() => cookies())
-        
+
         // Create Headers object from cookies
         const headers = new Headers()
         cookieStore.getAll().forEach((cookie: { name: string; value: string }) => {
           headers.append('cookie', `${cookie.name}=${cookie.value}`)
         })
-        
+
         return yield* getSession(headers)
       })
 
