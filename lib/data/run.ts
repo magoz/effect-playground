@@ -7,7 +7,7 @@ const basicExample = Effect.gen(function* () {
   console.log('=== Basic Error Handling ===')
 
   // This will handle all errors (database connection, SQL errors, etc.)
-  const user = yield* Users.getUser(1).pipe(
+  const user = yield* Users.getUser('1').pipe(
     Effect.catchAll(error => {
       console.error('Failed to get user:', error)
       return Effect.succeed(null) // Return null on error
@@ -23,7 +23,7 @@ const advancedExample = Effect.gen(function* () {
 
   // Create user with retry logic
   const createResult = yield* Users.createUser({
-    id: 1,
+    id: '1',
     name: 'John Doe',
     email: 'john@example.com'
   }).pipe(
@@ -37,7 +37,7 @@ const advancedExample = Effect.gen(function* () {
   console.log('Created user:', createResult)
 
   // Handle specific scenarios
-  const user = yield* Users.getUser(999999).pipe(
+  const user = yield* Users.getUser('999999').pipe(
     Effect.catchAll(error => {
       console.log('User not found, returning default')
       return Effect.succeed({
