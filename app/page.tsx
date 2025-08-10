@@ -3,6 +3,8 @@ import { getSession } from '@/lib/auth/getSession'
 
 export default async function Home() {
   const session = await getSession()
+  console.log('Server-side session:', session)
+  
   if (!session) redirect('/login')
 
   return (

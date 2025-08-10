@@ -1,23 +1,7 @@
-import { Effect, Layer } from 'effect'
+import { Effect } from 'effect'
 import { BetterAuth } from '@/lib/services/auth/service'
-import { DbLive } from '@/lib/services/db/live-layer'
-import { PgClient } from '@effect/sql-pg'
-import { Config } from 'effect'
+import { AppLayer } from '@/lib/layers'
 import { NextRequest, NextResponse } from 'next/server'
-
-// Use the existing layer setup that includes all dependencies
-const AppLayer = BetterAuth.Default.pipe(
-  Layer.provide(
-    DbLive.Default.pipe(
-      Layer.provide(
-        PgClient.layerConfig({
-          url: Config.redacted('DATABASE_URL'),
-          ssl: Config.succeed(true)
-        })
-      )
-    )
-  )
-)
 
 export async function POST(request: NextRequest) {
   const url = new URL(request.url)
