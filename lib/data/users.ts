@@ -3,29 +3,29 @@ import { eq } from 'drizzle-orm'
 import { DbLive } from '../services/db/live-layer'
 import * as schema from '../services/db/schema'
 
-export type User = typeof schema.users.$inferSelect
-export type UserInsert = typeof schema.users.$inferInsert
+export type User = typeof schema.user.$inferSelect
+export type UserInsert = typeof schema.user.$inferInsert
 
 export type UserUpdate = Partial<Omit<UserInsert, 'id' | 'createdAt'>>
 
 export const getUser = (id: string) =>
   Effect.gen(function* () {
     const db = yield* DbLive
-    const result = yield* db.select().from(schema.users).where(eq(schema.users.id, id))
+    const result = yield* db.select().from(schema.user).where(eq(schema.user.id, id))
     return result[0] ?? null
   })
 
 export const getUserByEmail = (email: string) =>
   Effect.gen(function* () {
     const db = yield* DbLive
-    const result = yield* db.select().from(schema.users).where(eq(schema.users.email, email))
+    const result = yield* db.select().from(schema.user).where(eq(schema.user.email, email))
     return result[0] ?? null
   })
 
 export const createUser = (data: UserInsert) =>
   Effect.gen(function* () {
     const db = yield* DbLive
-    const result = yield* db.insert(schema.users).values(data).returning()
+    const result = yield* db.insert(schema.user).values(data).returning()
     return result[0]
   })
 
@@ -33,9 +33,9 @@ export const updateUser = (id: string, data: UserUpdate) =>
   Effect.gen(function* () {
     const db = yield* DbLive
     const result = yield* db
-      .update(schema.users)
+      .update(schema.user)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(schema.users.id, id))
+      .where(eq(schema.user.id, id))
       .returning()
     return result[0] ?? null
   })
@@ -43,12 +43,12 @@ export const updateUser = (id: string, data: UserUpdate) =>
 export const deleteUser = (id: string) =>
   Effect.gen(function* () {
     const db = yield* DbLive
-    yield* db.delete(schema.users).where(eq(schema.users.id, id))
+    yield* db.delete(schema.user).where(eq(schema.user.id, id))
     return true
   })
 
 export const listUsers = (limit = 10, offset = 0) =>
   Effect.gen(function* () {
     const db = yield* DbLive
-    return yield* db.select().from(schema.users).limit(limit).offset(offset)
+    return yield* db.select().from(schema.user).limit(limit).offset(offset)
   })
