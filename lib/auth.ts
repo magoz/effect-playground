@@ -3,6 +3,7 @@ import { BetterAuth } from './services/auth/service'
 import { DbLive } from './services/db/live-layer'
 import { PgClient } from '@effect/sql-pg'
 import { Config } from 'effect'
+import type { betterAuth } from 'better-auth'
 
 // Create the complete layer stack
 const AppLayer = BetterAuth.Default.pipe(
@@ -15,7 +16,7 @@ const AppLayer = BetterAuth.Default.pipe(
 )
 
 // Create a cached auth instance
-let authInstance: any = null
+let authInstance: ReturnType<typeof betterAuth> | null = null
 
 export const auth = {
   get handler() {

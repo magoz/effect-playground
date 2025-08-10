@@ -1,7 +1,7 @@
 import * as Effect from 'effect/Effect'
-import { betterAuth } from "better-auth"
-import { drizzleAdapter } from "better-auth/adapters/drizzle"
-import { nextCookies } from "better-auth/next-js"
+import { betterAuth } from 'better-auth'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { nextCookies } from 'better-auth/next-js'
 import { DbLive } from '../db/live-layer'
 import { BetterAuthApiError } from './errors'
 import * as schema from '../db/schema'
@@ -10,26 +10,21 @@ export class BetterAuth extends Effect.Service<BetterAuth>()('@app/BetterAuth', 
   accessors: true,
   effect: Effect.gen(function* () {
     const db = yield* DbLive
-    
-    console.log('Initializing better-auth with database:', typeof db)
-    console.log('Database methods available:', Object.keys(db))
-    
+
     const auth = betterAuth({
       database: drizzleAdapter(db, {
-        provider: "pg", 
-        schema,
+        provider: 'pg',
+        schema
       }),
       emailAndPassword: {
-        enabled: true,
+        enabled: true
       },
       session: {
         expiresIn: 60 * 60 * 24 * 7, // 7 days
-        updateAge: 60 * 60 * 24, // 24 hours
+        updateAge: 60 * 60 * 24 // 24 hours
       },
-      plugins: [nextCookies()],
+      plugins: [nextCookies()]
     })
-    
-    console.log('Better-auth initialized successfully')
 
     const call = <A>(f: (client: typeof auth, signal: AbortSignal) => Promise<A>) =>
       Effect.tryPromise({
@@ -48,10 +43,10 @@ export class BetterAuth extends Effect.Service<BetterAuth>()('@app/BetterAuth', 
     const signIn = (email: string, password: string) =>
       call(auth => auth.api.signInEmail({ body: { email, password } }))
 
-    const signOut = (headers: Headers = new Headers()) => 
+    const signOut = (headers: Headers = new Headers()) =>
       call(auth => auth.api.signOut({ headers }))
 
-    const getSession = (headers: Headers = new Headers()) => 
+    const getSession = (headers: Headers = new Headers()) =>
       call(auth => auth.api.getSession({ headers }))
 
     const updateUser = (data: { name?: string; email?: string }) =>
