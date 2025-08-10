@@ -1,10 +1,12 @@
 'use client'
 
 import { authClient } from '@/lib/auth-client'
+import { useSession } from '@/lib/auth/useSession'
+import Link from 'next/link'
 import { useState } from 'react'
 
 export function TopNav() {
-  const { data: session, isPending } = authClient.useSession()
+  const { data: session, isPending } = useSession()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const handleLogout = async () => {
@@ -25,15 +27,13 @@ export function TopNav() {
         <div>
           <h1 className="text-xl font-semibold text-gray-900">Learning Effect</h1>
         </div>
-        
+
         <div className="flex items-center space-x-4">
           {isPending ? (
             <div className="text-sm text-gray-500">Loading...</div>
           ) : session?.user ? (
             <div className="flex items-center space-x-3">
-              <span className="text-sm text-gray-700">
-                Welcome, {session.user.name}
-              </span>
+              <span className="text-sm text-gray-700">Welcome, {session.user.name}</span>
               <button
                 onClick={handleLogout}
                 disabled={isLoggingOut}
@@ -44,7 +44,9 @@ export function TopNav() {
             </div>
           ) : (
             <div className="text-sm text-gray-500">
-              Not signed in
+              <Link href="/login" className="text-sm text-gray-700 hover:underline">
+                Login
+              </Link>
             </div>
           )}
         </div>
@@ -52,3 +54,4 @@ export function TopNav() {
     </nav>
   )
 }
+

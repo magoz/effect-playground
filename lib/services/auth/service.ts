@@ -59,6 +59,22 @@ export class BetterAuth extends Effect.Service<BetterAuth>()('@app/BetterAuth', 
         })
       )
 
+    // Server-side helper that automatically gets cookies from Next.js
+    const getSessionFromCookies = () =>
+      Effect.gen(function* () {
+        // Import cookies dynamically to avoid issues in client-side code
+        const { cookies } = yield* Effect.tryPromise(() => import('next/headers'))
+        const cookieStore = yield* Effect.tryPromise(() => cookies())
+        
+        // Create Headers object from cookies
+        const headers = new Headers()
+        cookieStore.getAll().forEach((cookie: { name: string; value: string }) => {
+          headers.append('cookie', `${cookie.name}=${cookie.value}`)
+        })
+        
+        return yield* getSession(headers)
+      })
+
     return {
       call,
       auth,
@@ -66,6 +82,7 @@ export class BetterAuth extends Effect.Service<BetterAuth>()('@app/BetterAuth', 
       signIn,
       signOut,
       getSession,
+      getSessionFromCookies,
       updateUser,
       changePassword
     } as const
