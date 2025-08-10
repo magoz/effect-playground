@@ -2,7 +2,7 @@ import { Effect, Context, Redacted } from 'effect'
 import { HttpClientResponse, HttpBody } from '@effect/platform'
 import { TelegramNetworkError } from './errors'
 
-export class TelegramConfig extends Context.Tag('TelegramConfig')<
+export class TelegramConfig extends Context.Tag('@app/TelegramConfig')<
   TelegramConfig,
   {
     readonly botToken: Redacted.Redacted<string>
@@ -10,7 +10,7 @@ export class TelegramConfig extends Context.Tag('TelegramConfig')<
   }
 >() {}
 
-export class Telegram extends Context.Tag('Telegram')<
+export class Telegram extends Context.Tag('@app/Telegram')<
   Telegram,
   {
     readonly sendMessage: (
@@ -59,4 +59,3 @@ ${chunk}
 
   yield* Effect.logInfo('All Telegram messages sent successfully')
 })
-
