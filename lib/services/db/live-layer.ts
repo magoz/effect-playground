@@ -8,7 +8,7 @@ const PgLive = PgClient.layerConfig({
   ssl: Config.succeed(true)
 })
 
-export class DrizzleClient extends Effect.Service<DrizzleClient>()('@app/DrizzleClient', {
+export class DbLive extends Effect.Service<DbLive>()('@app/DbLive', {
   dependencies: [PgLive],
   effect: Effect.gen(function* () {
     const db = yield* PgDrizzle.make<typeof schema>({

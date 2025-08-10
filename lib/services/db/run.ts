@@ -1,10 +1,10 @@
 import { Effect } from 'effect'
-import { DrizzleClient } from './service'
 import { eq } from 'drizzle-orm'
 import { users } from './schema'
+import { DbLive } from './live-layer'
 
 const program = Effect.gen(function* () {
-  const db = yield* DrizzleClient
+  const db = yield* DbLive
   const allUsers = yield* db.query.users.findMany()
   console.log('Users:', allUsers)
 
@@ -15,4 +15,4 @@ const program = Effect.gen(function* () {
   console.log('Non existing user:', nonExistingUser)
 }).pipe(Effect.catchAll(error => Effect.logError(`❌ Error: ${error}`)))
 
-program.pipe(Effect.provide(DrizzleClient.Default), Effect.runPromise)
+program.pipe(Effect.provide(DbLive.Default), Effect.runPromise)
