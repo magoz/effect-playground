@@ -1,6 +1,8 @@
 import { HttpApp, HttpServerRequest, HttpServerResponse } from '@effect/platform'
 import { Effect, Layer, ManagedRuntime, Schema } from 'effect'
 
+// https://effectbyexample.com/nextjs-api-handler
+
 // your main layer representing all of the services your handler needs (db, auth, etc.)
 const mainLive = Layer.empty
 
