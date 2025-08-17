@@ -11,7 +11,7 @@ class TelegramWebhookConfig extends Context.Tag('@app/api/webhooks/telegram')<
   }
 >() {}
 
-const TelegramConfigLive = Layer.effect(
+const TelegramWebhookConfigLive = Layer.effect(
   TelegramWebhookConfig,
   Effect.gen(function* () {
     const telegramWebhookSecretToken = yield* Config.redacted('TELEGRAM_WEBHOOK_SECRET_TOKEN').pipe(
@@ -23,7 +23,7 @@ const TelegramConfigLive = Layer.effect(
   })
 )
 
-const managedRuntime = ManagedRuntime.make(TelegramConfigLive)
+const managedRuntime = ManagedRuntime.make(TelegramWebhookConfigLive)
 const runtime = await managedRuntime.runtime()
 
 const effectHandler = Effect.gen(function* () {
