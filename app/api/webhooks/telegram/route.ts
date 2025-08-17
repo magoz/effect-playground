@@ -66,9 +66,7 @@ const effectHandler = Effect.gen(function* () {
     chatId: message.chat.id
   })
 
-  return yield* HttpServerResponse.json({
-    message: `Hello ${message.from.first_name}, you said: ${message.text}`
-  })
+  return yield* HttpServerResponse.json({ status: 'ok' })
 })
 
 const handler = HttpApp.toWebHandlerRuntime(runtime)(effectHandler)
