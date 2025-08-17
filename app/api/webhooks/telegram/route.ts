@@ -26,13 +26,19 @@ const TelegramConfigLive = Layer.effect(
 const managedRuntime = ManagedRuntime.make(TelegramConfigLive)
 const runtime = await managedRuntime.runtime()
 
-// everything interesting happens in this effect
-// Which is of type Effect<HttpServerResponse, _, HttpServerRequest>
-// it consumes the request from context anywhere
-// and ultimately produces some http response
-const exampleEffectHandler = Effect.gen(function* () {
-  // Temporarily disable secret token validation to test
-  yield* Effect.logInfo('Webhook received')
+const effectHandler = Effect.gen(function* () {
+  const headers = yield* HttpServerRequest.schemaHeaders(
+    Schema.Struct({
+      'x-telegram-bot-api-secret-token': Schema.String
+    })
+  )
+
+  const { telegramWebhookSecretToken } = yield* TelegramWebhookConfig
+
+  if (headers['x-telegram-bot-api-secret-token'] !== Redacted.value(telegramWebhookSecretToken)) {
+    yield* Effect.logWarning('Invalid secret token')
+    return yield* HttpServerResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
 
   const { message } = yield* HttpServerRequest.schemaBodyJson(
     Schema.Struct({
@@ -53,18 +59,19 @@ const exampleEffectHandler = Effect.gen(function* () {
       })
     })
   )
-  yield* Effect.logInfo('Message received', { 
-    text: message.text, 
+
+  yield* Effect.logInfo('Message received', {
+    text: message.text,
     from: message.from.first_name,
-    chatId: message.chat.id 
+    chatId: message.chat.id
   })
-  
+
   return yield* HttpServerResponse.json({
     message: `Hello ${message.from.first_name}, you said: ${message.text}`
   })
 })
 
-const handler = HttpApp.toWebHandlerRuntime(runtime)(exampleEffectHandler)
+const handler = HttpApp.toWebHandlerRuntime(runtime)(effectHandler)
 
 type Handler = (req: Request) => Promise<Response>
 export const POST: Handler = handler
