@@ -21,11 +21,7 @@ export const setupTelegramWebhooks = Effect.fn(function* () {
   )
 
   const telegramBaseUrl = 'https://api.telegram.org/'
-  const endpoint =
-    telegramBaseUrl +
-    'bot' +
-    Redacted.value(TELEGRAM_BOT_TOKEN) +
-    '/setWebhook'
+  const endpoint = telegramBaseUrl + 'bot' + Redacted.value(TELEGRAM_BOT_TOKEN) + '/setWebhook'
 
   const requestWithBody = yield* HttpClientRequest.bodyJson(HttpClientRequest.post(endpoint), {
     url: Redacted.value(TELEGRAM_WEBHOOK_URL),
@@ -64,4 +60,3 @@ export const setupTelegramWebhooks = Effect.fn(function* () {
 })
 
 Effect.runPromise(setupTelegramWebhooks().pipe(Effect.provide(NodeHttpClient.layer)))
-
